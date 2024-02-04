@@ -18,6 +18,7 @@ class Cart(models.Model):
 
 class CartItem(models.Model):
     unique_id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='cart_items')
     cart = models.ForeignKey(Cart, on_delete=CASCADE, related_name='items')
     product = models.ForeignKey(Product, on_delete=CASCADE)
     quantity = models.IntegerField()

@@ -15,11 +15,20 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = '__all__'
+        read_only_fields = ['user']
 
 class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = '__all__'
+
+    def create(self, validated_data):
+        # Assuming you have a user field in your CartItem model
+        user = self.context['request'].user
+        validated_data['user'] = user
+
+        return super().create(validated_data)
+
 
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,7 +36,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class OrderSerializer(serializers.ModelSerializer):
-    order_items = OrderItemSerializer(many=True, read_only=True)
+    order_items = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Order

@@ -30,6 +30,12 @@ class CartListAPIView(generics.ListCreateAPIView):
     permission_classes = [IsAccountType]
     allowed_roles = ['BUYER']
 
+    def get_queryset(self):
+        return Cart.objects.filter(user=self.request.user)
+    
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
 class CartDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Cart.objects.all()
@@ -50,7 +56,16 @@ class CartItemCreateAPIView(generics.CreateAPIView):
     permission_classes = [IsAccountType]
     allowed_roles = ['BUYER']
 
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
+class CartItemListAPIView(generics.ListAPIView):
+    queryset = CartItem.objects.all()
+    serializer_class = CartItemSerializer
+    permission_classes = [IsAccountType]
+    allowed_roles = ['BUYER']
+
+    
 class OrderListAPIView(generics.ListCreateAPIView):
     queryset = Order.objects.all()
     serializer_class = OrderSerializer
@@ -58,13 +73,17 @@ class OrderListAPIView(generics.ListCreateAPIView):
     allowed_roles = ['BUYER']
 
     def perform_create(self, serializer):
-        # Clear or mark cart items as ordered when creating an order
-        cart_items = self.request.user.cart_items.all()
-        for cart_item in cart_items:
-            # Perform any logic needed for marking as ordered or clearing the cart
-            cart_item.delete()
+        order_items_data = self.request.data.pop('order_items', [])
 
-        serializer.save(user=self.request.user)
+        order = serializer.save(user=self.request.user)
+
+        for order_item_data in order_items_data:
+            cart_item_id = order_item_data.get('cart_item')
+            quantity = order_item_data.get('quantity', 1)
+            
+            OrderItem.objects.create(order=order, cart_item_id=cart_item_id, quantity=quantity)
+
+        return Response({"detail": "Order created successfully"}, status=status.HTTP_201_CREATED)
     
 
 class OrderDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
