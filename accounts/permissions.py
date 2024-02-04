@@ -13,3 +13,13 @@ class IsAccountType(permissions.BasePermission):
             return True  # No specific role required for this view
 
         return request.user.user_type in allowed_roles
+    
+
+
+class IsBuyer(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.user_type == 'BUYER'
+
+class IsSeller(permissions.BasePermission):
+    def has_permission(self, request, view):
+        return request.user.is_authenticated and request.user.user_type == 'SELLER'
