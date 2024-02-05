@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from .models import Product, Cart, CartItem, Order, OrderItem, DailyData
@@ -6,12 +7,9 @@ from accounts.permissions import IsAccountType, IsBuyer, IsSeller
 from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-# class ProductListAPIView(generics.ListCreateAPIView):
-#     queryset = Product.objects.all()
-#     serializer_class = ProductSerializer
-#     permission_classes = [IsAccountType]
-#     allowed_roles = ['SELLER']
+
 # class ProductListAPIView(generics.ListCreateAPIView):
 #     queryset = Product.objects.all()
 #     serializer_class = ProductSerializer
@@ -36,6 +34,30 @@ class ProductListAPIView(generics.ListAPIView):
     serializer_class = ProductSerializer
     permission_classes = [IsAccountType]
     # allowed_roles = ['SELLER']
+    
+
+# Template view
+class ProductListTemplateView(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    # permission_classes = [IsAccountType]
+    template_name = 'product_list.html'
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        page = self.request.GET.get('page', 1)  # Get the current page from the query parameters
+        paginator = Paginator(queryset, 12)  # Display 12 products per page
+
+        try:
+            products = paginator.page(page)
+        except PageNotAnInteger:
+            products = paginator.page(1)
+        except EmptyPage:
+            products = paginator.page(paginator.num_pages)
+
+        serializer = self.get_serializer(products, many=True)
+
+        return render(request, self.template_name, {'products': serializer.data})
 
 class ProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
@@ -55,12 +77,10 @@ class CartListAPIView(generics.ListCreateAPIView):
         existing_cart = Cart.objects.filter(user=user).first()
 
         if existing_cart:
-            # Update the existing cart
             existing_cart.updated_at = timezone.now()
             existing_cart.save()
             serializer.instance = existing_cart
         else:
-            # Create a new cart
             serializer.save(user=user)
 
         headers = self.get_success_headers(serializer.data)
@@ -142,18 +162,15 @@ class OrderListAPIView(generics.ListCreateAPIView):
                 return Response({"detail": f"CartItem with id {cart_item_id} does not exist."},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-        # Clear the cart items after creating order items
         cart.items.all().delete()
         cart.delete()
 
-        # Include the order items in the response
         order_items_serializer = OrderItemSerializer(created_order_items, many=True)
 
         return Response({
             "detail": "Order created successfully",
             "order_id": order.id,
             "order_items": order_items_serializer.data,
-            # Include other fields as needed
         }, status=status.HTTP_201_CREATED)
 
     # def perform_create(self, serializer):

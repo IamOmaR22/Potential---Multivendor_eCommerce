@@ -18,6 +18,11 @@ class CartItemSerializer(serializers.ModelSerializer):
         fields = ['cart_item_id', 'cart', 'product', 'quantity']
         read_only_fields = ['cart']
 
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['cart'] = CartSerializer(instance.cart).data
+        return data
+
     def validate(self, data):
         return data
     

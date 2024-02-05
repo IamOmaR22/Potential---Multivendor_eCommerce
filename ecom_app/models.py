@@ -14,6 +14,7 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.name} - ${self.price}"
+    
 
 class Cart(models.Model):
     cart_id = models.AutoField(primary_key=True)
@@ -24,6 +25,7 @@ class Cart(models.Model):
 
     def __str__(self):
         return f"Cart for {self.user.username}"
+    
 
 class CartItem(models.Model):
     cart_item_id = models.AutoField(primary_key=True)
@@ -55,12 +57,14 @@ class Order(models.Model):
     ], max_length=20)
     order_items = models.ManyToManyField('CartItem', through='OrderItem', related_name='orders_items')
 
+    def __str__(self):
+        return f"Order #{self.order_id} - {self.user.username} - {self.created_at}"
+
 @receiver(post_save, sender=Order)
 def empty_cart(sender, instance, created, **kwargs):
     if created:
         instance.user.cart.items.clear()
         instance.user.cart.delete()
-
 
 
 
@@ -70,7 +74,13 @@ class OrderItem(models.Model):
     cart_item = models.ForeignKey(CartItem, on_delete=CASCADE)
     quantity = models.PositiveIntegerField(default=1)
 
+    def __str__(self):
+        return f"{self.quantity}x {self.cart_item.product}"
+
 
 class DailyData(models.Model):
     date = models.DateField(primary_key=True)
     total_revenue = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.date} - ${self.total_revenue}"
