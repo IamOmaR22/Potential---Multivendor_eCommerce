@@ -20,11 +20,14 @@ class CartItemSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        data['cart'] = CartSerializer(instance.cart).data
+    
+        if 'cart' in data and isinstance(data['cart'], dict):
+            data['cart'].pop('items', None)
         return data
 
     def validate(self, data):
         return data
+
     
 class CartSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(many=True, read_only=True)
