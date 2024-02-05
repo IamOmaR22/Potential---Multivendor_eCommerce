@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container mt-4 text-right">
+        <a href="{% url 'product-list-template' %}" class="btn btn-primary">Product List</a>
+    </div>
+
+    <div class="container mt-3">
+        <h1 class="mb-4">API Documentation - Multivendor eCommerce</h1>
+
+        <!-- Accounts Section -->
+        <section class="mb-5">
+            <h2>Accounts</h2>
+
+            <!-- User Create -->
+            <div class="mb-3">
+                <h3>POST - User Create</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/user/create/</code></p>
+                <p><strong>Body:</strong></p>
+                <pre><code class="json">{
+    "username": "buyeruser",
+    "email": "buyeruser@example.com",
+    "password": "buyeruserpass",
+    "user_type": "BUYER",
+    "first_name": "buyeruser",
+    "last_name": "User"
+}</code></pre>
+            </div>
+
+            <!-- Login - Seller -->
+            <div class="mb-3">
+                <h3>POST - Login - Seller</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/login/</code></p>
+                <p><strong>Body:</strong></p>
+                <pre><code class="json">{
+    "username": "testseller",
+    "password": "testpasswordseller"
+}</code></pre>
+            </div>
+
+            <!-- Login - Buyer -->
+            <div class="mb-3">
+                <h3>POST - Login - Buyer</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/login/</code></p>
+                <p><strong>Body:</strong></p>
+                <pre><code class="json">{
+    "username": "buyeruser",
+    "password": "buyeruserpass"
+}</code></pre>
+            </div>
+
+            <!-- User Update -->
+            <div class="mb-3">
+                <h3>PUT - User Update</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/user/1/update/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token ebfdc2a06d96d3a9f72aff5f8fa2e3c4b2550327</code></pre>
+                <p><strong>Body:</strong></p>
+                <pre><code class="json">{
+    "username": "testseller",
+    "email": "testseller@example.com",
+    "password": "testpasswordseller",
+    "user_type": "SELLER",
+    "first_name": "Test seller",
+    "last_name": "User seller"
+}</code></pre>
+            </div>
+
+            <!-- Delete User -->
+            <div class="mb-3">
+                <h3>DELETE - Delete User</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/user/4/delete/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token ebfdc2a06d96d3a9f72aff5f8fa2e3c4b2550327</code></pre>
+            </div>
+
+            <!-- User List -->
+            <div class="mb-3">
+                <h3>GET - User List</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/user/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token ebfdc2a06d96d3a9f72aff5f8fa2e3c4b2550327</code></pre>
+            </div>
+
+            <!-- Single User -->
+            <div class="mb-3">
+                <h3>GET - Single User</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/user/1/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token ebfdc2a06d96d3a9f72aff5f8fa2e3c4b2550327</code></pre>
+            </div>
+        </section>
+
+        <!-- Ecom_App Section -->
+        <section class="mb-5">
+            <h2>Ecom_App</h2>
+
+            <!-- Create Product -->
+            <div class="mb-3">
+                <h3>POST - Create Product</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/products/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token ebfdc2a06d96d3a9f72aff5f8fa2e3c4b2550327</code></pre>
+                <p><strong>Body:</strong></p>
+                <pre><code class="json">{
+    "name": "Product Name",
+    "description": "Product Description",
+    "price": 19.99,
+    "quantity": 50
+}</code></pre>
+            </div>
+
+            <!-- List Products -->
+            <div class="mb-3">
+                <h3>GET - List Products</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/products/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token c56208f4d8132fe83df26c15696d4da5f04984ea</code></pre>
+            </div>
+
+            <!-- Retrieve Product -->
+            <div class="mb-3">
+                <h3>GET - Retrieve Product</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/products/1/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token c56208f4d8132fe83df26c15696d4da5f04984ea</code></pre>
+            </div>
+
+            <!-- Update Product -->
+            <div class="mb-3">
+                <h3>PUT - Update Product</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/products/1/</code></p>
+                <p><strong>Body:</strong></p>
+                <pre><code class="json">{
+    "name": "Updated Product Name",
+    "description": "Updated Product Description",
+    "price": 29.99,
+    "quantity": 45
+}</code></pre>
+            </div>
+
+            <!-- Delete Product -->
+            <div class="mb-3">
+                <h3>DELETE - Delete Product</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/products/1/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token c56208f4d8132fe83df26c15696d4da5f04984ea</code></pre>
+            </div>
+
+            <!-- Create Cart -->
+            <div class="mb-3">
+                <h3>POST - Create Cart</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/carts/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token c56208f4d8132fe83df26c15696d4da5f04984ea</code></pre>
+                <p><strong>Body:</strong></p>
+                <pre><code class="json">{
+    "user": 1,
+    "items": [
+        {"product": 1, "quantity": 2},
+        {"product": 2, "quantity": 1}
+    ]
+}</code></pre>
+            </div>
+
+            <!-- List Carts -->
+            <div class="mb-3">
+                <h3>GET - List Carts</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/carts/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token c56208f4d8132fe83df26c15696d4da5f04984ea</code></pre>
+            </div>
+
+            <!-- Retrieve Cart -->
+            <div class="mb-3">
+                <h3>GET - Retrieve Cart</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/carts/1/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token c56208f4d8132fe83df26c15696d4da5f04984ea</code></pre>
+            </div>
+
+            <!-- Update Cart -->
+            <div class="mb-3">
+                <h3>PUT - Update Cart</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/carts/1/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token c56208f4d8132fe83df26c15696d4da5f04984ea</code></pre>
+                <p><strong>Body:</strong></p>
+                <pre><code class="json">{
+    "user": 1
+}</code></pre>
+            </div>
+
+            <!-- Delete Cart -->
+            <div class="mb-3">
+                <h3>DELETE - Delete Cart</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/carts/2/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token c56208f4d8132fe83df26c15696d4da5f04984ea</code></pre>
+            </div>
+
+            <!-- Create CartItem -->
+            <div class="mb-3">
+                <h3>POST - Create CartItem</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/cart-items/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token c56208f4d8132fe83df26c15696d4da5f04984ea</code></pre>
+                <p><strong>Body:</strong></p>
+                <pre><code class="json">{
+    "product": 1,
+    "quantity": 5
+}</code></pre>
+            </div>
+
+            <!-- List CartItem -->
+            <div class="mb-3">
+                <h3>GET - List CartItem</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/cartitem-list/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token c56208f4d8132fe83df26c15696d4da5f04984ea</code></pre>
+                <p><strong>Body:</strong></p>
+                <pre><code class="json">{
+    "cart": 1,
+    "product": 1,
+    "quantity": 2
+}</code></pre>
+            </div>
+
+            <!-- Create Order -->
+            <div class="mb-3">
+                <h3>POST - Create Order</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/orders/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token c56208f4d8132fe83df26c15696d4da5f04984ea</code></pre>
+                <p><strong>Body:</strong></p>
+                <pre><code class="json">{
+    "user": 1,
+    "total_amount": 120.00,
+    "shipping_address": "123 Main St, Cityville",
+    "order_items": [
+        {
+            "cart_item": 75,
+            "quantity": 2
+        },
+        {
+            "cart_item": 76,
+            "quantity": 2
+        }
+    ],
+    "payment_method": "CREDIT_CARD",
+    "order_status": "PENDING"
+}</code></pre>
+            </div>
+
+            <!-- List Orders -->
+            <div class="mb-3">
+                <h3>GET - List Orders</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/orders/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token c56208f4d8132fe83df26c15696d4da5f04984ea</code></pre>
+            </div>
+
+            <!-- Retrieve Order -->
+            <div class="mb-3">
+                <h3>GET - Retrieve Order</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/orders/1/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token c56208f4d8132fe83df26c15696d4da5f04984ea</code></pre>
+            </div>
+
+            <!-- Update Order -->
+            <div class="mb-3">
+                <h3>PUT - Update Order</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/orders/1/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token c56208f4d8132fe83df26c15696d4da5f04984ea</code></pre>
+                <p><strong>Body:</strong></p>
+                <pre><code class="json">{
+    "total_amount": "59.98",
+    "shipping_address": "123 Main St, City",
+    "order_status": "SHIPPED",
+    "payment_method": "CREDIT_CARD",
+    "user": 1
+}</code></pre>
+            </div>
+
+            <!-- Delete Order -->
+            <div class="mb-3">
+                <h3>DELETE - Delete Order</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/orders/6/</code></p>
+                <p><strong>Request Headers:</strong></p>
+                <pre><code>Authorization: Token c56208f4d8132fe83df26c15696d4da5f04984ea</code></pre>
+            </div>
+
+            <!-- Create DailyData -->
+            <div class="mb-3">
+                <h3>POST - Create DailyData</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/dailydata/</code></p>
+                <p><strong>Body:</strong></p>
+                <pre><code class="json">{
+    "date": "2024-02-10",
+    "total_revenue": 120.50
+}</code></pre>
+            </div>
+
+            <!-- List DailyData -->
+            <div class="mb-3">
+                <h3>GET - List DailyData</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/dailydata/</code></p>
+            </div>
+
+            <!-- Retrieve DailyData -->
+            <div class="mb-3">
+                <h3>GET - Retrieve DailyData</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/dailydata/1/</code></p>
+            </div>
+
+            <!-- Update DailyData -->
+            <div class="mb-3">
+                <h3>GET - Update DailyData</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/dailydata/1/</code></p>
+                <p><strong>Body:</strong></p>
+                <pre><code class="json">{
+    "total_revenue": 150.75
+}</code></pre>
+            </div>
+
+            <!-- Delete DailyData -->
+            <div class="mb-3">
+                <h3>DELETE - Delete DailyData</h3>
+                <p><strong>URL:</strong> <code>https://multivendorecommerce.pythonanywhere.com/api/dailydata/1/</code></p>
+            </div>
+        </section>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+
+</html>

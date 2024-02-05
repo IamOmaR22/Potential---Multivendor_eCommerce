@@ -200,3 +200,10 @@ class DailyDataListAPIView(generics.ListCreateAPIView):
 class DailyDataDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = DailyData.objects.all()
     serializer_class = DailyDataSerializer
+
+
+
+
+
+def api_documentation(request):
+    return render(request, 'api_documentation.html')
