@@ -4,30 +4,30 @@ from .models import Product, Cart, CartItem, Order, OrderItem, DailyData
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['unique_id', 'name', 'description', 'price', 'quantity', 'seller']
+        fields = ['product_id', 'name', 'description', 'price', 'quantity', 'seller']
         read_only_fields = ['seller']
 
     def create(self, validated_data):
         validated_data['seller'] = self.context['request'].user
         return super().create(validated_data)
 
-class CartSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Cart
-        fields = '__all__'
-        read_only_fields = ['user']
 
 class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
+        fields = ['cart_item_id', 'cart', 'product', 'quantity']
+        read_only_fields = ['cart']
+
+    def validate(self, data):
+        return data
+    
+class CartSerializer(serializers.ModelSerializer):
+    items = CartItemSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Cart
         fields = '__all__'
-
-    def create(self, validated_data):
-        # Assuming you have a user field in your CartItem model
-        user = self.context['request'].user
-        validated_data['user'] = user
-
-        return super().create(validated_data)
+        read_only_fields = ['user']
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -36,7 +36,7 @@ class OrderItemSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class OrderSerializer(serializers.ModelSerializer):
-    order_items = serializers.PrimaryKeyRelatedField(many=True, read_only=True)
+    order_items = OrderItemSerializer(many=True, read_only=True)
 
     class Meta:
         model = Order

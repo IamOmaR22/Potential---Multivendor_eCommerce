@@ -1,24 +1,41 @@
 from rest_framework import generics, permissions, status
 from rest_framework.response import Response
 from .models import Product, Cart, CartItem, Order, OrderItem, DailyData
-from .serializers import ProductSerializer, CartSerializer, CartItemSerializer, OrderSerializer, DailyDataSerializer
+from .serializers import ProductSerializer, CartSerializer, CartItemSerializer, OrderSerializer, DailyDataSerializer, OrderItemSerializer
 from accounts.permissions import IsAccountType, IsBuyer, IsSeller
+from django.utils import timezone
+from django.shortcuts import get_object_or_404
+from django.core.exceptions import ObjectDoesNotExist
 
 # class ProductListAPIView(generics.ListCreateAPIView):
 #     queryset = Product.objects.all()
 #     serializer_class = ProductSerializer
 #     permission_classes = [IsAccountType]
 #     allowed_roles = ['SELLER']
-class ProductListAPIView(generics.ListCreateAPIView):
+# class ProductListAPIView(generics.ListCreateAPIView):
+#     queryset = Product.objects.all()
+#     serializer_class = ProductSerializer
+
+#     def get_permissions(self):
+#         if self.request.method == 'GET':
+#             return [permissions.AllowAny()]
+#         elif self.request.method == 'POST':
+#             return [IsAccountType(allowed_roles=['SELLER'])]
+#         return super(ProductListAPIView, self).get_permissions()
+class ProductCreateAPIView(generics.CreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    permission_classes = [IsAccountType]
+    allowed_roles = ['SELLER']
 
-    def get_permissions(self):
-        if self.request.method == 'GET':
-            return [permissions.AllowAny()]
-        elif self.request.method == 'POST':
-            return [IsAccountType(allowed_roles=['SELLER'])]
-        return super(ProductListAPIView, self).get_permissions()
+    def perform_create(self, serializer):
+        serializer.save(seller=self.request.user)
+
+class ProductListAPIView(generics.ListAPIView):
+    queryset = Product.objects.all()
+    serializer_class = ProductSerializer
+    permission_classes = [IsAccountType]
+    # allowed_roles = ['SELLER']
 
 class ProductDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
@@ -32,9 +49,22 @@ class CartListAPIView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         return Cart.objects.filter(user=self.request.user)
-    
+
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        user = self.request.user
+        existing_cart = Cart.objects.filter(user=user).first()
+
+        if existing_cart:
+            # Update the existing cart
+            existing_cart.updated_at = timezone.now()
+            existing_cart.save()
+            serializer.instance = existing_cart
+        else:
+            # Create a new cart
+            serializer.save(user=user)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
 
 class CartDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
@@ -57,7 +87,22 @@ class CartItemCreateAPIView(generics.CreateAPIView):
     allowed_roles = ['BUYER']
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)
+        user = self.request.user
+
+        try:
+            cart = user.cart
+        except Cart.DoesNotExist:
+            cart = Cart.objects.create(user=user)
+
+        product_id = self.request.data.get('product')
+        quantity = self.request.data.get('quantity', 1)
+
+        product = Product.objects.get(pk=product_id)
+        cart_item = CartItem.objects.create(cart=cart, product=product, quantity=quantity)
+
+        serializer.instance = cart_item
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class CartItemListAPIView(generics.ListAPIView):
     queryset = CartItem.objects.all()
@@ -73,18 +118,58 @@ class OrderListAPIView(generics.ListCreateAPIView):
     allowed_roles = ['BUYER']
 
     def perform_create(self, serializer):
-        order_items_data = self.request.data.pop('order_items', [])
+        user = self.request.user
 
-        order = serializer.save(user=self.request.user)
+        try:
+            cart = user.cart
+        except ObjectDoesNotExist:
+            return Response({"detail": "User has no cart."},
+                            status=status.HTTP_400_BAD_REQUEST)
 
+        order = serializer.save(user=user)
+        order_items_data = self.request.data.get('order_items', [])
+
+        created_order_items = []
         for order_item_data in order_items_data:
             cart_item_id = order_item_data.get('cart_item')
             quantity = order_item_data.get('quantity', 1)
-            
-            OrderItem.objects.create(order=order, cart_item_id=cart_item_id, quantity=quantity)
 
-        return Response({"detail": "Order created successfully"}, status=status.HTTP_201_CREATED)
-    
+            try:
+                cart_item = CartItem.objects.get(pk=cart_item_id)
+                order_item = OrderItem.objects.create(order=order, cart_item=cart_item, quantity=quantity)
+                created_order_items.append(order_item)
+            except CartItem.DoesNotExist:
+                return Response({"detail": f"CartItem with id {cart_item_id} does not exist."},
+                                status=status.HTTP_400_BAD_REQUEST)
+
+        # Clear the cart items after creating order items
+        cart.items.all().delete()
+        cart.delete()
+
+        # Include the order items in the response
+        order_items_serializer = OrderItemSerializer(created_order_items, many=True)
+
+        return Response({
+            "detail": "Order created successfully",
+            "order_id": order.id,
+            "order_items": order_items_serializer.data,
+            # Include other fields as needed
+        }, status=status.HTTP_201_CREATED)
+
+    # def perform_create(self, serializer):
+    #     order = serializer.save(user=self.request.user)
+    #     order_items_data = self.request.data.pop('order_items', [])
+
+    #     for order_item_data in order_items_data:
+    #         cart_item_id = order_item_data.get('cart_item')
+    #         quantity = order_item_data.get('quantity', 1)
+    #         OrderItem.objects.create(order=order, cart_item_id=cart_item_id, quantity=quantity)
+
+    #     cart = self.request.user.cart
+    #     cart.items.all().delete()
+    #     cart.delete()
+
+    #     return Response({"detail": "Order created successfully"}, status=status.HTTP_201_CREATED)
 
 class OrderDetailAPIView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Order.objects.all()

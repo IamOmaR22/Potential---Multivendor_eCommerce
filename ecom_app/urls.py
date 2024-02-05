@@ -1,13 +1,14 @@
 from django.urls import path
 from .views import (
-    ProductListAPIView, ProductDetailAPIView,
+    ProductCreateAPIView, ProductListAPIView, ProductDetailAPIView,
     CartListAPIView, CartDetailAPIView, CartItemCreateAPIView,
     OrderListAPIView, OrderDetailAPIView,
     DailyDataListAPIView, DailyDataDetailAPIView, CartItemListAPIView
 )
 
 urlpatterns = [
-    path('products/', ProductListAPIView.as_view(), name='product-list'),
+    path('products/', ProductCreateAPIView.as_view(), name='product-create'),
+    path('products-list/', ProductListAPIView.as_view(), name='product-list'),
     path('products/<int:pk>/', ProductDetailAPIView.as_view(), name='product-detail'),
 
     path('carts/', CartListAPIView.as_view(), name='cart-list'),

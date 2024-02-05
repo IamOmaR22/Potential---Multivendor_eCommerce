@@ -15,7 +15,7 @@ class User(AbstractBaseUser, PermissionsMixin):
         (SELLER, 'Seller')
     )
 
-    unique_id = models.AutoField(primary_key=True)
+    user_id = models.AutoField(primary_key=True)
     username = models.CharField(unique=True, max_length=255)
     email = models.EmailField(unique=True, blank=True)
     password = models.CharField(max_length=128)  # Assuming you'll handle hashing separately
