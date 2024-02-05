@@ -88,3 +88,7 @@ class DailyData(models.Model):
 
     def __str__(self):
         return f"{self.date} - ${self.total_revenue}"
+    
+    class Meta:
+        verbose_name = "Daily Revenue Data"
+        verbose_name_plural = "Daily Revenue Data"

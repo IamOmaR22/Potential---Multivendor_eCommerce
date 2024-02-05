@@ -44,7 +44,7 @@ class ProductListTemplateView(generics.ListAPIView):
     def get(self, request, *args, **kwargs):
         queryset = self.get_queryset()
         page = self.request.GET.get('page', 1)
-        paginator = Paginator(queryset, 15)
+        paginator = Paginator(queryset, 12)
 
         try:
             products = paginator.page(page)
