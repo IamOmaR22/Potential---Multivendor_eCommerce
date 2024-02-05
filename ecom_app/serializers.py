@@ -36,6 +36,12 @@ class CartSerializer(serializers.ModelSerializer):
         model = Cart
         fields = '__all__'
         read_only_fields = ['user']
+    
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if not instance.items.exists():
+            data['detail'] = "Cart is empty. Add items to the cart before creating an order."
+        return data
 
 
 class OrderItemSerializer(serializers.ModelSerializer):
@@ -52,6 +58,12 @@ class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = '__all__'
+
+    def validate(self, data):
+        if self.context['request'].user.cart.items.count() == 0:
+            raise serializers.ValidationError("Cart is empty. Add items to the cart before creating an order.")
+
+        return data
 
 
 class DailyDataSerializer(serializers.ModelSerializer):

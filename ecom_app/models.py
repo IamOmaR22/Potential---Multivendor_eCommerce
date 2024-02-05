@@ -82,8 +82,9 @@ class OrderItem(models.Model):
 
 
 class DailyData(models.Model):
-    date = models.DateField(primary_key=True)
-    total_revenue = models.DecimalField(max_digits=10, decimal_places=2)
+    id = models.BigAutoField(primary_key=True)
+    date = models.DateField(unique=True)
+    total_revenue = models.DecimalField(max_digits=10, decimal_places=2, default=0)
 
     def __str__(self):
         return f"{self.date} - ${self.total_revenue}"

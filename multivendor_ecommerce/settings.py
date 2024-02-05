@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'accounts',
     'ecom_app',
+    'django_crontab',
 ]
 
 
@@ -137,3 +138,8 @@ REST_FRAMEWORK = {
     ],
     # other settings...
 }
+
+
+CRONJOBS = [
+    ('0 0 * * *', 'ecom_app.management.commands.save_daily_revenue'),
+]
