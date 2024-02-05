@@ -119,9 +119,7 @@ class CartItemCreateAPIView(generics.CreateAPIView):
         cart_item = CartItem.objects.create(cart=cart, product=product, quantity=quantity)
 
         cart.items.add(cart_item)
-
         serializer.instance = cart_item
-
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 class CartItemListAPIView(generics.ListAPIView):
@@ -162,9 +160,6 @@ class OrderListAPIView(generics.ListCreateAPIView):
                 return Response({"detail": f"CartItem with id {cart_item_id} does not exist."},
                                 status=status.HTTP_400_BAD_REQUEST)
 
-        cart.items.all().delete()
-        cart.delete()
-
         order_items_serializer = OrderItemSerializer(created_order_items, many=True)
 
         return Response({
@@ -172,6 +167,7 @@ class OrderListAPIView(generics.ListCreateAPIView):
             "order_id": order.id,
             "order_items": order_items_serializer.data,
         }, status=status.HTTP_201_CREATED)
+    
 
 
 class OrderDetailAPIView(generics.RetrieveUpdateDestroyAPIView):

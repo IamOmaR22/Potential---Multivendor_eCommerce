@@ -60,11 +60,14 @@ class Order(models.Model):
     def __str__(self):
         return f"Order #{self.order_id} - {self.user.username} - {self.created_at}"
 
+
 @receiver(post_save, sender=Order)
 def empty_cart(sender, instance, created, **kwargs):
     if created:
+        cart_items = instance.user.cart.items.all()
+        instance.order_items.set(cart_items)
         instance.user.cart.items.clear()
-        instance.user.cart.delete()
+        instance.user.cart.save()
 
 
 
